@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: do10-part2-postgres
+  namespace: do10-part2
+spec:
+  serviceName: do10-part2-postgres-headless-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: do10-part2-postgres
+  template:
+    metadata:
+      labels:
+        app: do10-part2-postgres
+    spec:
+      containers:
+      - name: do10-part2-postgres
+        image: docker.mcshine.ru/library/do10-db:0.1
+        imagePullPolicy: Always
+        env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: do10-part2-postgres-secrets
+                key: POSTGRES_PASSWORD
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: do10-part2-postgres-secrets
+                key: POSTGRES_USER
+          - name: PGDATA
+            value: /data/pgdata
+        ports:
+          - containerPort: 5432
+            name: postgres
+        volumeMounts:
+          - name: postgres-data
+            mountPath: /data
+        resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+            limits:
+              memory: "2Gi"
+              cpu: "2"
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      imagePullSecrets:
+        - name: regcred
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "do10-part2-postgres-storage-class"
+      resources:
+        requests:
+          storage: 1Gi 

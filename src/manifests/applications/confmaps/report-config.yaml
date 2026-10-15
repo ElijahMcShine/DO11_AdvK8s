@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: do10-part2-report-service-app
+  name: do10-part2-report-service-config
+  namespace: do10-part2
+data:
+  srv_envs: |
+    POSTGRES_HOST=do10-part2-postgres-headless-svc.do10-part2.svc
+    POSTGRES_PORT=5432
+    POSTGRES_DB=statistics_db
+    RABBIT_MQ_HOST=do10-part2-rabbit-headless-svc.do10-part2.svc
+    RABBIT_MQ_PORT=5672
+    RABBIT_MQ_QUEUE_NAME=messagequeue
+    RABBIT_MQ_EXCHANGE=messagequeue-exchange

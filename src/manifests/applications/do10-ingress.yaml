@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: do10-part2-ingress-1
+  namespace: do10-part2
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+    - secretName: do10-part2-tls
+      hosts:
+        - do10-part2.mcshine.ru
+  ingressClassName: contour
+  rules:
+    - host: do10-part2.mcshine.ru
+      http:
+        paths:
+        - path: /api/v1/gateway
+          pathType: Prefix
+          backend:
+            service:
+              name: do10-part2-gateway-service-svc
+              port:
+                number: 8087
+        - path: /api/v1/auth
+          pathType: Prefix
+          backend:
+            service:
+              name: do10-part2-session-service-svc
+              port:
+                number: 8081

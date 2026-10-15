@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: do10-part2-session-service-app
+  name: do10-part2-session-service-config
+  namespace: do10-part2
+data:
+  srv_envs: |
+    POSTGRES_HOST=do10-part2-postgres-headless-svc.do10-part2.svc
+    POSTGRES_PORT=5432
+    POSTGRES_DB=users_db

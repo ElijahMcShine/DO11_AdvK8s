@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: do10-part2-rabbit-app
+  name: do10-part2-rabbit-config
+  namespace: do10-part2
+data:
+  RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit disk_free_limit 2147483648"

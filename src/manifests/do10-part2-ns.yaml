@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: do10-part2
+  labels:
+    name: do10-part2
+    env: test
+    owner: Stilwool

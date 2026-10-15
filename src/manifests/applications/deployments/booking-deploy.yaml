@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: do10-part2-booking-service-app
+  name: do10-part2-booking-service-app
+  namespace: do10-part2
+spec:
+  minReadySeconds: 5
+  progressDeadlineSeconds: 600
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+       maxSurge: 100%
+       maxUnavailable: 25%  
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: do10-part2-booking-service-app
+  template:
+    metadata:
+      labels:
+        app: do10-part2-booking-service-app
+    spec:
+      containers:
+      - image: docker.mcshine.ru/library/do10-booking:0.1
+        imagePullPolicy: Always
+        name: do10-part2-booking-service
+        command:
+          - '/bin/bash'
+          - '/work/docker-entrypoint.sh'
+          - 'do10-part2-postgres-headless-svc.do10-part2.svc:5432'
+          - 'booking-service'
+        ports:
+          - containerPort: 8083
+            protocol: TCP
+        volumeMounts:
+          - mountPath: "/etc/secrets"
+            name: booking-service-secret
+            readOnly: true
+          - mountPath: "/etc/conf"
+            name: booking-service-config
+            readOnly: true
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 2000
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          runAsGroup: 2000
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+        - name: regcred
+      restartPolicy: Always
+      securityContext:
+        fsGroup: 2000
+        fsGroupChangePolicy: Always
+      volumes:
+        - name: booking-service-config
+          configMap:
+            name: do10-part2-booking-service-config
+            items:
+            - key: "srv_envs"
+              path: "srv_envs"
+        - name: booking-service-secret
+          secret:
+            secretName: do10-part2-booking-service-secret
+            items:
+            - key: ".srv_secrets"
+              path: ".srv_secrets"

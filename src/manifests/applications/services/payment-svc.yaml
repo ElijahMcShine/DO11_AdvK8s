@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: do10-part2-payment-service-app
+  name: do10-part2-payment-service-svc
+  namespace: do10-part2
+spec:
+  ports:
+  - name: http-8084
+    port: 8084
+    protocol: TCP
+    targetPort: 8084
+  selector:
+    app: do10-part2-payment-service-app
+  type: ClusterIP

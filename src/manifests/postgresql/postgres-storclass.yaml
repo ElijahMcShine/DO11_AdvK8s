@@ -1,0 +1,8 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: do10-part2-postgres-storage-class
+  namespace: do10-part2
+provisioner: kubernetes.io/no-provisioner # indicates that this StorageClass does not support automatic provisioning
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer

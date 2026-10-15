@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: do10-part2-rabbit-app
+  name: do10-part2-rabbit-app
+  namespace: do10-part2
+spec:
+  serviceName: do10-part2-rabbit-headless-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: do10-part2-rabbit-app
+  template:
+    metadata:
+      labels:
+        app: do10-part2-rabbit-app
+    spec:
+      containers:
+      - name: do10-part2-rabbit-app
+        image: rabbitmq:3-management-alpine
+        env:
+          - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
+            valueFrom:
+              configMapKeyRef:
+                name: do10-part2-rabbit-config
+                key: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                name: do10-part2-rabbit-secrets
+                key: RABBITMQ_DEFAULT_PASS
+          - name: RABBITMQ_DEFAULT_USER
+            valueFrom:
+              secretKeyRef:
+                name: do10-part2-rabbit-secrets
+                key: RABBITMQ_DEFAULT_USER
+        ports:
+          - containerPort: 5672
+            name: rabbit

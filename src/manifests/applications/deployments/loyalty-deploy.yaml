@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: do10-part2-loyalty-service-app
+  name: do10-part2-loyalty-service-app
+  namespace: do10-part2
+spec:
+  minReadySeconds: 5
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: do10-part2-loyalty-service-app
+  template:
+    metadata:
+      labels:
+        app: do10-part2-loyalty-service-app
+    spec:
+      containers:
+      - image: docker.mcshine.ru/library/do10-loyalty:0.1
+        imagePullPolicy: Always
+        name: do10-part2-loyalty-service
+        command:
+          - '/bin/bash'
+          - '/work/docker-entrypoint.sh'
+          - 'do10-part2-postgres-headless-svc.do10-part2.svc:5432'
+          - 'loyalty-service'
+        ports:
+          - containerPort: 8085
+            protocol: TCP
+        volumeMounts:
+          - mountPath: "/etc/secrets"
+            name: loyalty-service-secret
+            readOnly: true
+          - mountPath: "/etc/conf"
+            name: loyalty-service-config
+            readOnly: true
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 2000
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          runAsGroup: 2000
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+        - name: regcred
+      restartPolicy: Always
+      securityContext:
+        fsGroup: 2000
+        fsGroupChangePolicy: Always
+      volumes:
+        - name: loyalty-service-config
+          configMap:
+            name: do10-part2-loyalty-service-config
+            items:
+            - key: "srv_envs"
+              path: "srv_envs"
+        - name: loyalty-service-secret
+          secret:
+            secretName: do10-part2-loyalty-service-secret
+            items:
+            - key: ".srv_secrets"
+              path: ".srv_secrets"

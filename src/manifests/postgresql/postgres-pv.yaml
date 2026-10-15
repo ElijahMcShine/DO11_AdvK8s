@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: do10-part2-postgres-data-pv
+  namespace: do10-part2
+  labels:
+    env: prod
+    target: do10-part2-postgres-0
+spec:
+  capacity:
+    storage: 1Gi
+  storageClassName: "do10-part2-postgres-storage-class"
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /nfs/do10-part2/storage/postgresql/data
+    type: DirectoryOrCreate

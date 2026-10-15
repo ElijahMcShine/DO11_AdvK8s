@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: do10-part2-loyalty-service-app
+  name: do10-part2-loyalty-service-svc
+  namespace: do10-part2
+spec:
+  ports:
+  - name: http-8085
+    port: 8085
+    protocol: TCP
+    targetPort: 8085
+  selector:
+    app: do10-part2-loyalty-service-app
+  type: ClusterIP

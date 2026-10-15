@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: do10-part2-rabbit-app
+  name: do10-part2-rabbit-headless-svc
+  namespace: do10-part2
+spec:
+  clusterIP: None
+  ports:
+  - name: rabbimq
+    port: 5672
+    targetPort: rabbimq
+    protocol: TCP 
+  selector:
+    app: do10-part2-rabbit-app
